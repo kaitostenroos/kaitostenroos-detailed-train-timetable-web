@@ -14,27 +14,33 @@ function Trainlist() {
         getTrainsByRoute(shortcodes)
         .then(data => 
             {
-                const filteredTrains = data.filter(train => train.trainType === "HL");
-                setTrains(filteredTrains);
-
-                // Set station indexes based on the first train's timeTableRows
-                const updatedTrains = filteredTrains.map(train => {
-                    const startIndex = train.timeTableRows.findIndex(row => row.stationShortCode === shortcodes.start);
-                    const endIndex = train.timeTableRows.findIndex(row => row.stationShortCode === shortcodes.end);
-                    return { ...train, startIndex, endIndex };
-                });
-
-                const validTrains = updatedTrains.filter(train => {
-                    const startTime = new Date(train.timeTableRows[train.startIndex]?.scheduledTime);
-                    const endTime = new Date(train.timeTableRows[train.endIndex]?.scheduledTime);
-                    return startTime <= endTime;
-                });
-
-                setTrains(validTrains);
-                console.log("loaded");
-
-                if (updatedTrains.length === 0) {
+                if (data.code === "TRAIN_NOT_FOUND") {
                     alert("Junia ei löytynyt");
+                    setTrains([]);
+                } else {
+                     const filteredTrains = data.filter(train => train.trainType === "HL" || train.trainType === "HLV");
+                    setTrains(filteredTrains);
+
+                    const updatedTrains = filteredTrains.map(train => {
+                        const startIndex = train.timeTableRows.findIndex(row => row.stationShortCode === shortcodes.start);
+                        const endIndex = train.timeTableRows.findIndex(row => row.stationShortCode === shortcodes.end);
+                        return { ...train, startIndex, endIndex };
+                    });
+    
+                    const validTrains = updatedTrains.filter(train => {
+                        const startTime = new Date(train.timeTableRows[train.startIndex]?.scheduledTime);
+                        const endTime = new Date(train.timeTableRows[train.endIndex]?.scheduledTime);
+                        return startTime <= endTime;
+                    });
+    
+                    setTrains(validTrains);
+                    console.log("loaded");
+    
+                    if (updatedTrains.length === 0) {
+                        alert("Junia ei löytynyt");
+                        setTrains([]);
+                    }
+
                 }
             })
             .catch(error => console.log(error));
