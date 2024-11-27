@@ -1,24 +1,35 @@
 import { useState, useEffect } from 'react';
-import { request } from '../helpers/axios_helper';
+import { getSearchHistory } from '../backendapi';
 
-const AuthContent = () => {
+const SearchHistory = ({ startStation, endStation }) => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        request(
-            "GET",
-            "/messages",
-            {}
-        ).then((response) => {
-            setData(response.data);
-        });
-    }, []); 
+        const fetchData = async () => {
+            try {
+                const response = await getSearchHistory();
+                console.log(response);
+                setData(response);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchData();
+    }, [startStation, endStation]);
 
     return (
         <div>
-            {data && data.map((line, index) => <p key={index}>{line}</p>)}
+            <h2>Haku historia</h2>
+            <ul>
+                {data.slice().reverse().map((item, index) => (
+                    <li key={index}>
+                        <p>{item.startStation} - {item.endStation}</p>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };
 
-export default AuthContent;
+export default SearchHistory;

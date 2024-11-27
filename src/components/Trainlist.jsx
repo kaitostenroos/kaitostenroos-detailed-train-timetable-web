@@ -1,16 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TrainSearch from "./TrainSearch";
+import SearchHistory from "./SearchHistory";
 
 
 import { getTrainsByRoute  } from "../trainapi";
 import FormatIsoDate  from "../utils/Timeformatter";
-import AuthContent from "./SearchHistory";
+import { postSearchHistory } from "../backendapi";
+
 
 
 function Trainlist() {
     const [trains, setTrains] = useState([]);
+    const [shortcodes, setShortcodes] = useState([]);
+    const [startStation, setStartStation] = useState("");
+    const [endStation, setEndStation] = useState("");
+    const [key, setKey] = useState(0);
 
-    const handleFetch = (shortcodes) => {
+    const handleFetch = (shortcodes, stationNames) => {
         getTrainsByRoute(shortcodes)
         .then(data => 
             {
@@ -39,8 +45,10 @@ function Trainlist() {
                     if (updatedTrains.length === 0) {
                         alert("Junia ei löytynyt");
                         setTrains([]);
-                    }
-
+                    } 
+                    setShortcodes(shortcodes);
+                    postSearchHistory(shortcodes.start, stationNames.start, shortcodes.end, stationNames.end);
+                    setKey(prevKey => prevKey + 1);
                 }
             })
             .catch(error => console.log(error));
@@ -53,7 +61,7 @@ function Trainlist() {
         <>
             <h1 className="title">Lähijunahaku</h1>
             <TrainSearch onSearch={handleFetch}/>
-            <AuthContent/>
+            <SearchHistory key={key} startStation={startStation} endStation={endStation} />
             <div className="train-info-container">
                 {trains.map((train, index) => {
                     const startTime = train.timeTableRows[train.startIndex]?.scheduledTime;

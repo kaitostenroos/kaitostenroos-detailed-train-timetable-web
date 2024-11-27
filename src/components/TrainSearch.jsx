@@ -1,7 +1,12 @@
 import { useState} from "react";
 import { TextField, Autocomplete, Button } from "@mui/material";
 
-const TrainSearch = ({ onSearch}) => {
+const TrainSearch = ({ onSearch }) => {
+
+    const [stationNames, setStationNames] = useState({
+        start: "",
+        end: ""
+    });
 
     const [shortcodes, setShortcodes] = useState({
         start: "",
@@ -71,6 +76,16 @@ const TrainSearch = ({ onSearch}) => {
         { label: "Vehkala", id:"VEH" }
     ];
 
+    const handleStartStationChange = (event, value) => {
+        setShortcodes({ ...shortcodes, start: value?.id || "" });
+        setStationNames({ ...stationNames, start: value?.label || "" });
+    };
+
+    const handleEndStationChange = (event, value) => {
+        setShortcodes({ ...shortcodes, end: value?.id || "" });
+        setStationNames({ ...stationNames, end: value?.label || "" });
+    };
+
     const handleSubmit = () => {
         console.log("loading")
         if (shortcodes.start === "" || shortcodes.end === "") {
@@ -79,8 +94,9 @@ const TrainSearch = ({ onSearch}) => {
         } else if (shortcodes.start === shortcodes.end) {
             alert("Valitse eri asemat");
             return;
-        } else
-        onSearch(shortcodes);
+        } else {
+            onSearch(shortcodes, stationNames);
+        }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -89,7 +105,7 @@ const TrainSearch = ({ onSearch}) => {
                 <Autocomplete
                     disablePortal
                     options={trainStations}
-                    onChange={(event, value) => setShortcodes({ ...shortcodes, start: value?.id || "" })}
+                    onChange={handleStartStationChange}
                     renderInput={(params) => (
                         <TextField
                         {...params}
@@ -116,7 +132,7 @@ const TrainSearch = ({ onSearch}) => {
                 <Autocomplete
                     disablePortal
                     options={trainStations}
-                    onChange={(event, value) => setShortcodes({ ...shortcodes, end: value?.id || "" })}
+                    onChange={handleEndStationChange}
                     renderInput={(params) => (
                         <TextField
                         {...params}
