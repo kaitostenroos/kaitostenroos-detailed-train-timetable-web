@@ -1,7 +1,8 @@
 import { useState} from "react";
 import { TextField, Autocomplete, Button } from "@mui/material";
+import { getFavorites, postFavorite } from "../backendapi";
 
-const TrainSearch = ({ onSearch }) => {
+const TrainSearch = ({ onSearch, onAddFavorite }) => {
 
     const [stationNames, setStationNames] = useState({
         start: "",
@@ -100,6 +101,20 @@ const TrainSearch = ({ onSearch }) => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const handleAddFavorite = () => {
+        if (shortcodes.start === "" || shortcodes.end === "") {
+            alert("Valitse asemat");
+            return;
+        } else if (shortcodes.start === shortcodes.end) {
+            alert("Valitse eri asemat");
+            return;
+        } else {
+            postFavorite(shortcodes.start, stationNames.start, shortcodes.end, stationNames.end);
+            getFavorites();
+            onAddFavorite();
+        }
+    }
+
     return (
     <div className="search-container">
                 <Autocomplete
@@ -166,6 +181,16 @@ const TrainSearch = ({ onSearch }) => {
                 >
                     Hae junia
                 </Button>
+                <Button
+                    variant="contained"
+                    color="green"
+                    onClick={handleAddFavorite}
+                    sx={{ margin: 0,
+                        height: 55,
+                    }}
+                    >
+                        Lisää suosikkeihin
+                    </Button>
             </div>
     );
 };

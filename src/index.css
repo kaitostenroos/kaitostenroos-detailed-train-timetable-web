@@ -52,17 +52,16 @@ button {
   font-weight: 500;
   font-family: inherit;
   color: inherit;
-  background-color: #1a1a1a;
+  background-color: transparent;
+  opacity: .7;
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
-  border-color: #646cff;
+  opacity: 1;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+
 
 /*@media (prefers-color-scheme: light) {
   :root {

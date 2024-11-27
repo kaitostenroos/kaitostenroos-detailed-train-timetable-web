@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { deleteSearchHistory, getSearchHistory } from '../backendapi';
+import { deleteFavorite, getFavorites } from '../backendapi';
 
-const SearchHistory = ({ startStation, endStation }) => {
+const Favorites = ({ startStation, endStation }) => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await getSearchHistory();
+                const response = await getFavorites();
+                console.log(response);
                 setData(response);
             } catch (error) {
                 console.log(error);
@@ -19,7 +20,7 @@ const SearchHistory = ({ startStation, endStation }) => {
 
     const handleDelete = async (id) => {
         try {
-            await deleteSearchHistory(id);
+            await deleteFavorite(id);
             setData(data.filter(item => item.id !== id));
         } catch (error) {
             console.error('Error deleting search history:', error);
@@ -28,7 +29,7 @@ const SearchHistory = ({ startStation, endStation }) => {
 
     return (
         <div className='search-history-container'>
-            <h2>Haku historia</h2>
+            <h2>Suosikit</h2>
             <ul>
                 {data.slice().reverse().map((item, index) => (
                     <li key={index}>
@@ -41,4 +42,4 @@ const SearchHistory = ({ startStation, endStation }) => {
     );
 };
 
-export default SearchHistory;
+export default Favorites;

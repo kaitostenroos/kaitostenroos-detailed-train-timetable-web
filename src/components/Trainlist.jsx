@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import TrainSearch from "./TrainSearch";
 import SearchHistory from "./SearchHistory";
+import Favorites from "./Favorites";
 
 
 import { getTrainsByRoute  } from "../trainapi";
@@ -15,6 +16,7 @@ function Trainlist() {
     const [startStation, setStartStation] = useState("");
     const [endStation, setEndStation] = useState("");
     const [key, setKey] = useState(0);
+    const [favoriteKey, setFavoriteKey] = useState(1);
 
     const handleFetch = (shortcodes, stationNames) => {
         getTrainsByRoute(shortcodes)
@@ -54,14 +56,19 @@ function Trainlist() {
             .catch(error => console.log(error));
     }
 
-
+    const handleAddFavorite = () => {
+        setFavoriteKey(prevFavoriteKey => prevFavoriteKey + 1);
+    }
 
 
     return(
         <>
             <h1 className="title">Lähijunahaku</h1>
-            <TrainSearch onSearch={handleFetch}/>
-            <SearchHistory key={key} startStation={startStation} endStation={endStation} />
+            <TrainSearch onSearch={handleFetch} onAddFavorite={handleAddFavorite}/>
+            <div className="saved-searches-container">
+                <SearchHistory key={key} startStation={startStation} endStation={endStation} />
+                <Favorites key={favoriteKey} startStation={startStation} endStation={endStation} />
+            </div>
             <div className="train-info-container">
                 {trains.map((train, index) => {
                     const startTime = train.timeTableRows[train.startIndex]?.scheduledTime;
